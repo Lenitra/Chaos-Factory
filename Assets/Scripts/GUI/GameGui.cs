@@ -53,9 +53,9 @@ public class GameGui : MonoBehaviour
             hideAll();
         }
         // On click outside of the panel
-        if(Input.GetMouseButtonDown(0) && Input.mousePosition.y > 1000){
-            hideAll();
-        }
+        // if(Input.GetMouseButtonDown(0) && Input.mousePosition.y > 1000){
+        //     hideAll();
+        // }
     }
 
 }

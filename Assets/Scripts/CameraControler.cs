@@ -4,51 +4,42 @@ using UnityEngine;
 
 public class CameraControler : MonoBehaviour
 {    
-    public float moveSpeed = 5f;
-    public float zoomSpeed = 0.5f;
+    private float moveSpeed = 2f;
+    private float zoomSpeed = 0.5f;
     private Vector3 prevMousePos;
-    public float yZoom = 10f;
+    private float yZoom = 10f;
+
+    private bool onUI = false;
 
     void Update()
     {
-        if (Input.GetMouseButton(0))
+        if (Input.GetMouseButtonDown(0))
         {
-            // Déplacement de la caméra
-            Vector3 mousePos = Input.mousePosition;
-
-            if (prevMousePos != Vector3.zero)
-            {
-                Vector3 deltaPos = mousePos - prevMousePos;
-
-                // Déplacement horizontal
-                transform.Translate(Vector3.right * deltaPos.x * moveSpeed * Time.deltaTime, Space.Self);
-
-                // Déplacement vertical
-                transform.Translate(Vector3.up * deltaPos.y * moveSpeed * Time.deltaTime, Space.Self);
+            // if the clic is on a UI element, don't move the camera
+            if (UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject()){
+                onUI = true;
+                return;
             }
-
-            prevMousePos = mousePos;
+            onUI = false;
+            prevMousePos = Input.mousePosition;
         }
-        else if (Input.GetMouseButton(1))
+        else if (Input.GetMouseButton(0))
         {
-            // Zoom de la caméra
-            float zoom = Input.GetAxis("Mouse Y");
+            // if the clic is on a UI element, don't move the camera
+            if (UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject()){
+                onUI = true;
+                return;
+            }
+            if (onUI) return;
+            Vector3 delta = Input.mousePosition - prevMousePos;
+            transform.Translate(-delta.x * moveSpeed * Time.deltaTime, 0, -delta.y * moveSpeed * Time.deltaTime);
+            prevMousePos = Input.mousePosition;
+        }
+        
+        // zoom with scroll
+        yZoom -= Input.mouseScrollDelta.y * zoomSpeed;
 
-            // Zoom avant
-            if (zoom < 0)
-            {
-                transform.Translate(Vector3.forward * zoomSpeed * Time.deltaTime);
-            }
-            // Zoom arrière
-            else if (zoom > 0)
-            {
-                transform.Translate(Vector3.back * zoomSpeed * Time.deltaTime);
-            }
-        }
-        else
-        {
-            prevMousePos = Vector3.zero;
-        }
+
         // reset le y de la caméra
         transform.position = new Vector3(transform.position.x, yZoom, transform.position.z);
     }
